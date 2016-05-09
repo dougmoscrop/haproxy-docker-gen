@@ -1,4 +1,5 @@
 ![License MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Circle CI](https://circleci.com/gh/dougmoscrop/haproxy-docker-gen.svg?style=svg&circle-token=09e07da8ba00c38481580cb02881c76b8108e3e1)](https://circleci.com/gh/dougmoscrop/haproxy-docker-gen)
 
 Based off of https://github.com/jwilder/nginx-proxy
 
