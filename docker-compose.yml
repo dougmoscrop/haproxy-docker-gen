@@ -1,0 +1,24 @@
+version: '2'
+
+services:
+
+  haproxy:
+    restart: always
+    build: .
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    ports:
+      - "80:80"
+      - "9000:9000"
+    environment:
+      - dev_ip
+      - dev_hello="1337"
+    networks:
+      default:
+        aliases:
+          - hello.169.0.13.37.xip.io
+
+  hello:
+    image: dockercloud/hello-world
+    labels:
+      - backend

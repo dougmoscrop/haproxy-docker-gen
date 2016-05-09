@@ -1,0 +1,50 @@
+defaults
+  mode http
+  balance first
+  timeout connect 3000ms
+  timeout client 5m
+  timeout server 5m
+  option redispatch
+  maxconn 5000
+  retries 3
+
+frontend stats
+  bind *:9000
+  stats enable
+  stats hide-version
+  stats uri /
+
+{{ $env := .Env }}
+{{ $label := or (index $env "label") "backend" }}
+{{ $services := groupByLabel (whereLabelExists $ $label) "com.docker.compose.service" }}
+
+frontend proxy
+  bind *:80
+
+{{ range $service := keys $services }}
+  acl {{ $service }}_host hdr_beg(host) -i {{ $service }}.
+  use_backend {{ $service }} if {{ $service }}_host
+{{ end }}
+
+{{ with $default := index $env "default_backend" }}
+{{ with index $services $default }}
+  default_backend {{ $default }}
+{{ end }}
+{{ end }}
+
+{{ range $service, $containers := $services }}
+backend {{ $service }}
+
+{{ with $dev_ip := index $env "dev_ip" }}
+{{ with $dev_port := index $env (print "dev_" $service) }}
+  server {{ $service }}_dev {{ $dev_ip }}:{{ $dev_port }} check
+{{ end }}
+{{ end }}
+
+{{ range $c, $value := $containers }}
+{{ range $n, $network := $value.Networks }}
+  server {{ $service }}_docker_{{ $c }}_{{ $n }} {{ $network.IP }}:80 check
+{{ end }}
+{{ end }}
+
+{{ end }}

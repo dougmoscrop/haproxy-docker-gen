@@ -1,0 +1,6 @@
+.git/
+.vagrant/
+circle.yml
+docker-compose.*
+Vagrantfile
+test.sh
