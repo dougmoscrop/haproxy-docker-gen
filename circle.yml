@@ -11,5 +11,7 @@ dependencies:
     - docker-compose up -d --build
 
 test:
+  pre:
+    - while ! nc -q 1 localhost 80 < /dev/null; do sleep 2; done
   override:
     - ./test.sh
